@@ -51,6 +51,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ReportingStructure getNumberOfReports(Employee employee){
         LOG.debug("Getting the number of reports for employee: [{}]", employee);
 
-        return new ReportingStructure();
+        ReportingStructure reportingStructure = new ReportingStructure();
+        reportingStructure.setRootEmployee(employee);
+
+        return reportingStructure;
     }
 }

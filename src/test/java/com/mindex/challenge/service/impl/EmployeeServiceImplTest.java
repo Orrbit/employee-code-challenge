@@ -1,5 +1,6 @@
 package com.mindex.challenge.service.impl;
 
+import com.mindex.challenge.dao.EmployeeRepository;
 import com.mindex.challenge.data.Employee;
 import com.mindex.challenge.data.ReportingStructure;
 import com.mindex.challenge.service.EmployeeService;
@@ -32,6 +33,10 @@ public class EmployeeServiceImplTest {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
 
     @LocalServerPort
     private int port;
@@ -85,67 +90,38 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void testNoDirectReports() {
-        Employee testEmployee = new Employee();
-        testEmployee.setFirstName("1");
+        Employee noReportsEmployee = employeeRepository.findByEmployeeId("c0c2293d-16bd-4603-8e08-638a9d18b22c");
 
-        // Create checks
-        testEmployee = restTemplate.postForEntity(employeeUrl, testEmployee, Employee.class).getBody();
+        assertEquals("George", noReportsEmployee.getFirstName());
+        assertEquals("Harrison", noReportsEmployee.getLastName());
 
-        ReportingStructure rs = restTemplate.getForEntity(employeeReportingStructureUrl, ReportingStructure.class, testEmployee.getEmployeeId()).getBody();
+        ReportingStructure rs = restTemplate.getForEntity(employeeReportingStructureUrl, ReportingStructure.class, noReportsEmployee.getEmployeeId()).getBody();
 
         assertEquals(0, rs.getNumberOfReports());
-
     }
 
     @Test
     public void testOneLevelDepthReportingStructure() {
-        Employee rootEmployee = new Employee();
-        rootEmployee.setFirstName("1");
+        Employee onlyDirectReportsEmployee = employeeRepository.findByEmployeeId("03aa1462-ffa9-4978-901b-7c001562cf6f");
 
-        int numDirectReports = 5;
-        List<Employee> directReports = new LinkedList<Employee>();
-        for(int i = 1; i <= numDirectReports; i++){
-            Employee directReport = new Employee();
-            directReport.setFirstName("1 - " + i);
-            directReports.add(directReport);
-            restTemplate.postForEntity(employeeUrl, directReport, Employee.class);
-        }
-        rootEmployee.setDirectReports(directReports);
-        rootEmployee = restTemplate.postForEntity(employeeUrl, rootEmployee, Employee.class).getBody();
+        assertEquals("Ringo", onlyDirectReportsEmployee.getFirstName());
+        assertEquals("Starr", onlyDirectReportsEmployee.getLastName());
 
-        ReportingStructure rs = restTemplate.getForEntity(employeeReportingStructureUrl, ReportingStructure.class, rootEmployee.getEmployeeId()).getBody();
+        ReportingStructure rs = restTemplate.getForEntity(employeeReportingStructureUrl, ReportingStructure.class, onlyDirectReportsEmployee.getEmployeeId()).getBody();
 
-        assertEquals(numDirectReports, rs.getNumberOfReports());
-
+        assertEquals(2, rs.getNumberOfReports());
     }
 
     @Test
     public void testTwoLevelDepthReportingStructure() {
-        Employee rootEmployee = new Employee();
-        rootEmployee.setFirstName("1");
+        Employee rootEmployee = employeeRepository.findByEmployeeId("16a596ae-edd3-4847-99fe-c4518e82c86f");
 
-        int numDirectReports = 5;
-        int numIndierctReports = 5;
-        List<Employee> directReports = new LinkedList<Employee>();
-        for(int i = 1; i <= numDirectReports; i++){
-            List<Employee> indirectReports = new LinkedList<Employee>();
-            Employee directReport = new Employee();
-            directReport.setFirstName("1 - " + i);
-            directReports.add(directReport);
-            for(int j = 1; j <= numIndierctReports; j++){
-                Employee indirectReport = new Employee();
-                directReport.setFirstName("1 - " + i + " - " + j);
-                indirectReports.add(indirectReport);
-                restTemplate.postForEntity(employeeUrl, indirectReport, Employee.class);
-            }
-            restTemplate.postForEntity(employeeUrl, directReport, Employee.class);
-        }
-        rootEmployee.setDirectReports(directReports);
-        rootEmployee = restTemplate.postForEntity(employeeUrl, rootEmployee, Employee.class).getBody();
+        assertEquals("John", rootEmployee.getFirstName());
+        assertEquals("Lennon", rootEmployee.getLastName());
 
         ReportingStructure rs = restTemplate.getForEntity(employeeReportingStructureUrl, ReportingStructure.class, rootEmployee.getEmployeeId()).getBody();
 
-        assertEquals(numDirectReports * numIndierctReports, rs.getNumberOfReports());
+        assertEquals(4, rs.getNumberOfReports());
     }
 
     private static void assertEmployeeEquivalence(Employee expected, Employee actual) {

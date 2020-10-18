@@ -5,15 +5,14 @@ import java.util.List;
 
 public class ReportingStructure {
     private int numberOfReports;
+    private Employee rootEmployee;
 
     public ReportingStructure() {
     }
 
-    public int getNumberOfReports() {
-        return numberOfReports;
-    }
+    public int getNumberOfReports() { return numberOfReports; }
 
-    public void setNumberOfReports(int numberOfReports) {
-        this.numberOfReports = numberOfReports;
-    }
+    public Employee getRootEmployee() { return rootEmployee; }
+
+    public void setRootEmployee(Employee rootEmployee) { this.rootEmployee = rootEmployee; }
 }
