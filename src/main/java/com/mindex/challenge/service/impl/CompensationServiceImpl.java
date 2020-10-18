@@ -32,6 +32,7 @@ public class CompensationServiceImpl implements CompensationService {
 
     @Override
     public List<Compensation> readByEmployeeId(String employeeId) {
+        LOG.debug("Reading compensations for employee id [{}]", employeeId);
 
         List<Compensation> compensationList = compensationRepository.findAllByEmployeeEmployeeId(employeeId);
 

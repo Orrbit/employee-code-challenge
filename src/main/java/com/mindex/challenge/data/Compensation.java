@@ -19,7 +19,7 @@ public class Compensation {
 
     public Employee getEmployee() { return employee; }
 
-    public void setEmployeeId(Employee employee) { this.employee = employee; }
+    public void setEmployee(Employee employee) { this.employee = employee; }
 
     public int getSalary() { return salary; }
 
