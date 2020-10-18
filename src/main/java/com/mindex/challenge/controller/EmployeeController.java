@@ -42,6 +42,7 @@ public class EmployeeController {
         LOG.debug("Received employee number report request for id [{}]", id);
 
         Employee employee = employeeService.read(id);
+
         return employeeService.getNumberOfReports(employee);
     }
 }

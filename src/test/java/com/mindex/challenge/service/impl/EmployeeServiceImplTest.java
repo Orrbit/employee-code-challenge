@@ -11,17 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -123,6 +119,20 @@ public class EmployeeServiceImplTest {
 
         assertEquals(4, rs.getNumberOfReports());
     }
+
+    @Test
+    public void testDetectsCircularReportingAndThrowsError() {
+        Employee circularReportA = employeeRepository.findByEmployeeId("a7622629-1b49-2232-9080-71ef05ea69fe");
+
+        assertEquals("Circular Report Test A", circularReportA.getFirstName());
+
+        ResponseEntity<String> response = restTemplate.getForEntity(employeeReportingStructureUrl, String.class, circularReportA.getEmployeeId());
+        String returnError = response.getBody();
+
+        assertTrue(returnError.contains("Detected a circular reporting with employee a7622629-1b49-2232-9080-71ef05ea69fe"));
+
+    }
+
 
     private static void assertEmployeeEquivalence(Employee expected, Employee actual) {
         assertEquals(expected.getFirstName(), actual.getFirstName());

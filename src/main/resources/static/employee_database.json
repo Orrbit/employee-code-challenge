@@ -49,5 +49,23 @@
     "lastName" : "Harrison",
     "position" : "Developer III",
     "department" : "Engineering"
+  },
+  {
+    "employeeId" : "a7622629-1b49-2232-9080-71ef05ea69fe",
+    "firstName" : "Circular Report Test A",
+    "directReports" : [
+      {
+        "employeeId" : "d6ffb52d-76a5-9cf2-a423-4b8321bcb910"
+      }
+    ]
+  },
+  {
+    "employeeId" : "d6ffb52d-76a5-9cf2-a423-4b8321bcb910",
+    "firstName" : "Circular Report Test B",
+    "directReports" : [
+      {
+        "employeeId" : "a7622629-1b49-2232-9080-71ef05ea69fe"
+      }
+    ]
   }
 ]
