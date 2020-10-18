@@ -12,7 +12,14 @@ public class ReportingStructure {
 
     public int getNumberOfReports() { return numberOfReports; }
 
+    private void updateNumberOfReports(Employee employee){
+        numberOfReports = employee.getDirectReports().size();
+    }
+
     public Employee getRootEmployee() { return rootEmployee; }
 
-    public void setRootEmployee(Employee rootEmployee) { this.rootEmployee = rootEmployee; }
+    public void setRootEmployee(Employee rootEmployee) {
+        this.rootEmployee = rootEmployee;
+        updateNumberOfReports(rootEmployee);
+    }
 }
