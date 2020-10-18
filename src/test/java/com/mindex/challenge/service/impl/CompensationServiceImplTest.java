@@ -48,7 +48,7 @@ public class CompensationServiceImplTest {
     }
 
     @Test
-    public void testCreateReadUpdate() {
+    public void testCreateRead() {
         Employee testEmployee = employeeRepository.findByEmployeeId("16a596ae-edd3-4847-99fe-c4518e82c86f");
 
         Compensation compensation = new Compensation();
@@ -68,6 +68,61 @@ public class CompensationServiceImplTest {
 
         assertEquals(createdCompensation.getCompensationId(), firstReadCompensation.getCompensationId());
         assertCompensationEquivalence(createdCompensation, firstReadCompensation);
+    }
+
+    @Test
+    public void testCreateManyReadAllSameEmployee() {
+        Employee testEmployee = employeeRepository.findByEmployeeId("16a596ae-edd3-4847-99fe-c4518e82c86f");
+
+        Compensation firstCompensation = new Compensation();
+        firstCompensation.setEffectiveDate(new Date());
+        firstCompensation.setSalary(20000);
+        firstCompensation.setEmployee(testEmployee);
+
+        Compensation secondCompensation = new Compensation();
+        secondCompensation.setEffectiveDate(new Date());
+        secondCompensation.setSalary(50000);
+        secondCompensation.setEmployee(testEmployee);
+
+        //Create both compensations
+        restTemplate.postForEntity(compensationUrl, firstCompensation, Compensation.class);
+        restTemplate.postForEntity(compensationUrl, secondCompensation, Compensation.class);
+
+
+        // Read checks
+        Compensation[] readCompensations = restTemplate.getForEntity(compensationAndEmployeeIdUrl, Compensation[].class, testEmployee.getEmployeeId()).getBody();
+
+        assertEquals(2, readCompensations.length);
+    }
+
+    @Test
+    public void testCreateManyReadAllDifferentEmployee() {
+        Employee firstEmployee = employeeRepository.findByEmployeeId("16a596ae-edd3-4847-99fe-c4518e82c86f");
+        Employee secondEmployee = employeeRepository.findByEmployeeId("b7839309-3348-463b-a7e3-5de1c168beb3");
+
+        Compensation firstCompensation = new Compensation();
+        firstCompensation.setEffectiveDate(new Date());
+        firstCompensation.setSalary(20000);
+        firstCompensation.setEmployee(firstEmployee);
+
+        Compensation secondCompensation = new Compensation();
+        secondCompensation.setEffectiveDate(new Date());
+        secondCompensation.setSalary(50000);
+        secondCompensation.setEmployee(secondEmployee);
+
+        //Create both compensations
+        restTemplate.postForEntity(compensationUrl, firstCompensation, Compensation.class);
+        restTemplate.postForEntity(compensationUrl, secondCompensation, Compensation.class);
+
+
+        // Read checks
+        Compensation[] readCompensations = restTemplate.getForEntity(compensationAndEmployeeIdUrl, Compensation[].class, firstEmployee.getEmployeeId()).getBody();
+
+        assertEquals(1, readCompensations.length);
+
+        readCompensations = restTemplate.getForEntity(compensationAndEmployeeIdUrl, Compensation[].class, secondEmployee.getEmployeeId()).getBody();
+
+        assertEquals(1, readCompensations.length);
     }
 
     private static void assertCompensationEquivalence(Compensation expected, Compensation actual) {
