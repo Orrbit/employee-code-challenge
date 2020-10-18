@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -51,9 +54,36 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ReportingStructure getNumberOfReports(Employee employee){
         LOG.debug("Getting the number of reports for employee: [{}]", employee);
 
+        Employee fullInfoEmployee = populateAllReportInformation(employee);
+
         ReportingStructure reportingStructure = new ReportingStructure();
-        reportingStructure.setRootEmployee(employee);
+        reportingStructure.setRootEmployee(fullInfoEmployee);
+        reportingStructure.setNumberOfReportsBasedOnEmployee(fullInfoEmployee);
 
         return reportingStructure;
+    }
+
+    /**
+     * This function will populate the report information of an employee.
+     * It is required because the data on stores the direct reports id.
+     * There are many cases where we want to know all the information
+     * about the employee.
+     *
+     *
+     * @param employee
+     * @return the input employee with all information about its reports.
+     */
+    private Employee populateAllReportInformation(Employee employee){
+        if(employee.getDirectReports() == null){
+            return employee;
+        }
+        List<Employee> fullInfoDirectReports = new LinkedList<Employee>();
+        for (Employee directReports: employee.getDirectReports()) {
+            Employee fullInfoDirectReportEmployee = read(directReports.getEmployeeId());
+            fullInfoDirectReportEmployee = populateAllReportInformation(fullInfoDirectReportEmployee);
+            fullInfoDirectReports.add(fullInfoDirectReportEmployee);
+        }
+        employee.setDirectReports(fullInfoDirectReports);
+        return employee;
     }
 }
