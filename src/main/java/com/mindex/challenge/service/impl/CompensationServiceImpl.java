@@ -33,7 +33,7 @@ public class CompensationServiceImpl implements CompensationService {
     @Override
     public List<Compensation> readByEmployeeId(String employeeId) {
 
-        List<Compensation> compensationList = compensationRepository.findAllByEmployeeId(employeeId);
+        List<Compensation> compensationList = compensationRepository.findAllByEmployeeEmployeeId(employeeId);
 
         if (compensationList.isEmpty()){
             throw new RuntimeException("No compensations found for : " + employeeId);

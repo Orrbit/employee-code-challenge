@@ -5,7 +5,7 @@ import java.util.Date;
 public class Compensation {
 
     private String compensationId;
-    private String employeeId;
+    private Employee employee;
     private int salary;
     private Date effectiveDate;
 
@@ -17,9 +17,9 @@ public class Compensation {
 
     public void setCompensationId(String compensationId) { this.compensationId = compensationId; }
 
-    public String getEmployeeId() { return employeeId; }
+    public Employee getEmployee() { return employee; }
 
-    public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
+    public void setEmployeeId(Employee employee) { this.employee = employee; }
 
     public int getSalary() { return salary; }
 
